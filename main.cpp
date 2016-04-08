@@ -8,8 +8,10 @@
 #include <stack>	// Stos
 
 #include <iostream>
+#include <iomanip>
 #include <stdio.h>
-
+#include <cstdlib>
+#include <ctime>
 #include "Slav.h"
 
 #define REPORT_ADAPTERS showMeAdapterSizes(queueOfSlavs,stackOfSlavs)
@@ -46,23 +48,42 @@ void containers(Slav * slavs, int n)
 	printf("# Containers\n");
 	REPORT_CONTAINERS;
 	printf("## vector\n");
-
+	int where=0;
 	// Umieść Słowian w losowej kolejności w wektorze.
-
+	for (int i = 0; i < n; ++i)
+	{
+		vectorOfSlavs.insert(vectorOfSlavs.begin()+where,slavs+i);
+		where=rand()%vectorOfSlavs.size();
+	}
 	// Wykorzystując iterator i funkcję description(), wyświetl wszystkich Słowian w wektorze
-
+	for (vector <Slav *>::iterator iter = vectorOfSlavs.begin();iter != vectorOfSlavs.end(); iter++)
+		cout << (*iter)->description() << endl;
 	REPORT_CONTAINERS;
 	printf("## set\n");
 
 	// Przenieś wszystkich Słowian z wektoru do zbioru.
-	
+	for (int i = 0; i < n; ++i)
+	{
+		where=rand()%vectorOfSlavs.size();
+		setOfSlavs.insert(vectorOfSlavs.front());
+		vectorOfSlavs.erase(vectorOfSlavs.begin());
+	}
 	REPORT_CONTAINERS;
 	printf("## map\n");
 
 	// Stwórz słownik tworzący pary Słowian, z tych znajdujących się w zbiorze, czyszcząc zbiór
-	
+	for (set <Slav *>::iterator iter = setOfSlavs.begin();iter != setOfSlavs.end(); iter++)
+	{
+		mapOfSlavs[*iter++]=*iter--;
+		setOfSlavs.erase(iter);
+		setOfSlavs.erase(++iter);
+	}
 	// Wykorzystując iterator, wyświetl wszystkie pary Słowian
-	
+	for (map <Slav *, Slav *>::iterator iter = mapOfSlavs.begin(); iter != mapOfSlavs.end(); iter++)
+	{
+		cout<< (*iter).first->description() << " --- \t";
+		cout<< (*iter).second->description() << endl;
+	}
 	REPORT_CONTAINERS;
 }
 
@@ -91,7 +112,7 @@ void adapters(Slav * slavs, int n)
 
 void showMeContainerSizes(vector <Slav *> vector, set <Slav *> set, map <Slav *, Slav*> map)
 {
-	printf("[vector_size = %lu, set_size = %lu, map_size = %lu, existingSlavs = %i]\n",
+	printf("[vector_size = %u, set_size = %u, map_size = %u, existingSlavs = %i]\n",
 		vector.size(),
 		set.size(),
 		map.size(),
@@ -100,7 +121,7 @@ void showMeContainerSizes(vector <Slav *> vector, set <Slav *> set, map <Slav *,
 
 void showMeAdapterSizes(queue <Slav *> queue, stack <Slav *> stack)
 {
-	printf("[queue_size = %lu, stack_size = %lu, existingSlavs = %i]\n",
+	printf("[queue_size = %u, stack_size = %u, existingSlavs = %i]\n",
 		queue.size(),
 		stack.size(),
 		Slav::counter());
